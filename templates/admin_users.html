@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Usuarios - CMAX</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>CMAX - Administración de Usuarios</h1>
+                <p>Bienvenido, {{ current_user }} (Administrador)</p>
+            </div>
+            <div class="header-right">
+                <a href="{{ url_for('dashboard') }}" class="btn-primary" style="margin-right: 10px;">
+                    Volver al Dashboard
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar Sesión</a>
+            </div>
+        </header>
+
+        <div class="admin-section">
+            <h2>Agregar Nuevo Usuario</h2>
+            <form id="addUserForm" class="user-form">
+                <div class="form-row">
+                    <input type="text" name="username" placeholder="Nombre de usuario" required>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <select name="role">
+                        <option value="user">Usuario Normal</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                    <button type="submit" class="btn-primary">Agregar Usuario</button>
+                </div>
+            </form>
+            <div id="addUserMessage"></div>
+        </div>
+
+        <div class="admin-section">
+            <h2>Usuarios Existentes</h2>
+            <div class="users-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for username, user_data in users.items() %}
+                        <tr>
+                            <td>{{ username }}</td>
+                            <td>{{ user_data.email }}</td>
+                            <td>
+                                <span class="role-badge {{ user_data.role }}">
+                                    {{ user_data.role | upper }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if username != current_user %}
+                                <a href="{{ url_for('admin_delete_user', username=username) }}" 
+                                   class="btn-danger" 
+                                   onclick="return confirm('¿Estás seguro de eliminar a {{ username }}?')">
+                                    Eliminar
+                                </a>
+                                {% else %}
+                                <span class="text-muted">Usuario actual</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('addUserForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        fetch('/admin/add-user', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const messageDiv = document.getElementById('addUserMessage');
+            if (data.success) {
+                messageDiv.innerHTML = '<div class="message success">' + data.message + '</div>';
+                this.reset();
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                messageDiv.innerHTML = '<div class="message error">' + data.message + '</div>';
+            }
+        });
+    });
+    </script>
+</body>
+</html>

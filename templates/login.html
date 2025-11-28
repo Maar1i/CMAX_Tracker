@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <div class="logo">
+            <h1>CMAX</h1>
+            <p>Sistema de Gestión de Bonos</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" id="username" name="username" placeholder="Usuario" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Contraseña" required>
+            </div>
+            
+            <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        </form>
+
+        <div class="forgot-password-section">
+            <a href="#" id="forgotPasswordLink">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <div id="forgotPasswordModal" class="modal">
+            <div class="modal-content">
+                <h3>Recuperar Contraseña</h3>
+                <form id="forgotPasswordForm">
+                    <input type="text" id="resetUsername" placeholder="Usuario" required>
+                    <button type="submit" class="btn-primary">Enviar Código</button>
+                </form>
+                <div id="forgotPasswordMessage"></div>
+            </div>
+        </div>
+
+        <div id="verifyCodeModal" class="modal">
+            <div class="modal-content">
+                <h3>Verificar Código</h3>
+                <form id="verifyCodeForm">
+                    <input type="text" id="verificationCode" placeholder="Código de 6 dígitos" required>
+                    <button type="submit" class="btn-primary">Verificar</button>
+                </form>
+                <div id="verifyCodeMessage"></div>
+            </div>
+        </div>
+
+        <div id="resetPasswordModal" class="modal">
+            <div class="modal-content">
+                <h3>Nueva Contraseña</h3>
+                <form id="resetPasswordForm">
+                    <input type="password" id="newPassword" placeholder="Nueva contraseña" required>
+                    <button type="submit" class="btn-primary">Cambiar Contraseña</button>
+                </form>
+                <div id="resetPasswordMessage"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='auth.js') }}"></script>
+{% endblock %}
