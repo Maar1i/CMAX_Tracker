@@ -131,9 +131,10 @@ body {
 
 .content-header {
     display: flex;
-    justify-content: between;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+    gap: 2rem; 
 }
 
 .content-header h1 {
@@ -145,7 +146,9 @@ body {
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
+    margin-left: auto;
+    padding-right: 1rem;
 }
 
 .time-display {
@@ -154,6 +157,11 @@ body {
     gap: 8px;
     color: var(--text-secondary);
     font-weight: 500;
+    background: rgba(29, 99, 34, 0.05); 
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(29, 99, 34, 0.1);
+    min-width: max-content;
 }
 
 .refresh-btn {
@@ -281,6 +289,7 @@ body {
     font-size: 3em;
     margin-bottom: 20px;
     color: var(--cmax-primary);
+    
 }
 
 /* Price Overview */
@@ -954,4 +963,67 @@ body {
     .risk-metrics {
         grid-template-columns: 1fr;
     }
+}
+
+.chart-period-selector {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 40px; 
+    box-shadow: var(--shadow);
+}
+
+.chart-period-selector .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.chart-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.chart-btn {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.chart-btn.active {
+    background: var(--cmax-primary);
+    color: white;
+    border-color: var(--cmax-primary);
+}
+
+.chart-btn:hover:not(.active) {
+    background: var(--cmax-light);
+    border-color: var(--cmax-primary);
+}
+
+
+.btn-small {
+    background: var(--cmax-primary);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 0 2px;
+    font-size: 0.8em;
+    transition: background 0.3s ease;
+}
+
+.btn-small:hover {
+    background: var(--cmax-secondary);
+    transform: translateY(-1px);
+}
+
+.holdings-table .btn-small {
+    margin: 2px;
 }

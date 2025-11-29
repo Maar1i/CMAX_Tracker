@@ -9,6 +9,7 @@ class PremiumDashboard {
         this.currentTab = 'monitoring';
         this.currentPeriod = '24h';
         this.portfolioData = this.generatePortfolioData();
+        this.changingPeriod = false;
         this.init();
     }
 
@@ -88,6 +89,10 @@ class PremiumDashboard {
     }
 
     async changeChartPeriod(period) {
+        // Evitar múltiples llamadas rápidas
+        if (this.changingPeriod) return;
+        this.changingPeriod = true;
+
         // Update UI
         document.querySelectorAll('.chart-btn').forEach(b => {
             b.classList.remove('active');
@@ -95,14 +100,19 @@ class PremiumDashboard {
                 b.classList.add('active');
             }
         });
-        
+
         this.currentPeriod = period;
-        
+    
         if (this.currentBond) {
             await this.loadBondData(period);
         }
-        
+    
         this.showNotification(`Período cambiado a ${this.getPeriodDisplayName(period)}`);
+    
+        // Reset flag después de un delay
+        setTimeout(() => {
+            this.changingPeriod = false;
+        }, 500);
     }
 
     getPeriodDisplayName(period) {
@@ -219,7 +229,7 @@ class PremiumDashboard {
     }
 
     updateDashboard(data) {
-         const template = document.getElementById('dashboardTemplate');
+        const template = document.getElementById('dashboardTemplate');
         const dashboardContent = document.getElementById('dashboardContent');
         dashboardContent.innerHTML = template.innerHTML;
         
@@ -240,7 +250,18 @@ class PremiumDashboard {
     }
 
     setupChartPeriodListeners() {
-        document.querySelectorAll('.chart-btn').forEach(btn => {
+        // Solo seleccionar botones de la sección de período del gráfico
+        const periodSection = document.querySelector('.chart-period-selector');
+        if (!periodSection) return;
+    
+        // Remover listeners anteriores
+        periodSection.querySelectorAll('.chart-btn').forEach(btn => {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+        });
+    
+        // Añadir nuevos listeners
+        periodSection.querySelectorAll('.chart-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const period = btn.dataset.period;
                 this.changeChartPeriod(period);
@@ -282,25 +303,27 @@ class PremiumDashboard {
             `Actualizado: ${new Date(realtime.timestamp).toLocaleTimeString('es-MX')}`;
     }
 
+    
     updateChart(data) {
-        const ctx = document.getElementById('priceChart').getContext('2d');
-        const realtime = data.realtime_data;
-        
+        const ctx = document.getElementById('priceChart');
+        if (!ctx) return;
+    
+        // Destruir chart anterior si existe
         if (this.priceChart) {
             this.priceChart.destroy();
         }
-        
+    
+        const realtime = data.realtime_data;
         const isPositive = realtime.change >= 0;
         const chartColor = isPositive ? '#4caf50' : '#f44336';
-        
-        // Actualizar título del gráfico
-        const periodName = this.getPeriodDisplayName(this.currentPeriod);
+    
+        // Actualizar título del gráfico (sin referencias a período)
         const chartHeader = document.querySelector('.chart-header h3');
         if (chartHeader) {
-            chartHeader.innerHTML = `<i class="fas fa-chart-line"></i> Comportamiento ${periodName}`;
+            chartHeader.innerHTML = `<i class="fas fa-chart-line"></i> Comportamiento del Bono`;
         }
-        
-        this.priceChart = new Chart(ctx, {
+    
+        this.priceChart = new Chart(ctx.getContext('2d'), {
             type: 'line',
             data: {
                 labels: realtime.history_24h.hours,
@@ -444,20 +467,30 @@ class PremiumDashboard {
     }
 
     loadPortfolioData() {
+        console.log('=== START loadPortfolioData ===');
         const data = this.portfolioData;
-        
+    
+        // Solo actualizar UI, no modificar datos
         document.getElementById('totalPortfolioValue').textContent = `$${data.totalValue.toLocaleString()}`;
         document.getElementById('totalInvestment').textContent = `$${data.totalInvestment.toLocaleString()}`;
-        
+    
         const totalReturn = data.totalValue - data.totalInvestment;
         document.getElementById('totalReturn').textContent = `$${totalReturn.toLocaleString()}`;
         document.getElementById('totalReturn').className = totalReturn >= 0 ? 'position-positive' : 'position-negative';
-        
-        const avgYield = data.holdings.reduce((sum, holding) => sum + holding.yield, 0) / data.holdings.length;
+    
+        // CALCULAR YIELD PROMEDIO SIMPLE
+        let avgYield = 0;
+        if (data.holdings && data.holdings.length > 0) {
+            const totalYield = data.holdings.reduce((sum, holding) => {
+                return sum + (parseFloat(holding.yield) || 0);
+            }, 0);
+            avgYield = totalYield / data.holdings.length;
+        }
         document.getElementById('avgYield').textContent = `${avgYield.toFixed(2)}%`;
         
         this.updateHoldingsTable(data.holdings);
         this.updateAllocationChart(data.holdings);
+        console.log('=== END loadPortfolioData ===');
     }
 
     updateHoldingsTable(holdings) {
@@ -678,36 +711,302 @@ class PremiumDashboard {
     }
 
     viewBondDetails(bondId) {
-        this.showTab('monitoring');
-        setTimeout(() => {
-            this.selectBond(bondId);
-        }, 100);
+    // Primero actualizar el sidebar
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.tab === 'monitoring') {
+            item.classList.add('active');
+        }
+    });
+    
+    // Luego cambiar de tab
+    this.showTab('monitoring');
+    
+    // Finalmente seleccionar el bono
+    setTimeout(() => {
+        this.selectBond(bondId);
+    }, 100);
     }
 
     tradeBond(bondId) {
+        // Aquí puedes implementar la lógica de compra/venta
         this.showNotification(`Iniciando operación con ${bondId}`);
-    }
-
-    refreshData() {
-        if (this.currentTab === 'monitoring' && this.currentBond) {
-            this.loadBondData(this.currentPeriod);
-            this.showNotification(`Datos actualizados - ${this.getPeriodDisplayName(this.currentPeriod)}`);
-        } else if (this.currentTab === 'portfolio') {
-            this.loadPortfolioData();
-            this.showNotification('Portafolio actualizado');
-        } else if (this.currentTab === 'analysis') {
-            this.loadAnalysisData();
-            this.showNotification('Análisis actualizado');
+    
+        // Ejemplo: Abrir un modal de operación
+        this.openTradeModal(bondId);
         }
+
+    openTradeModal(bondId) {
+        const currentPrice = this.getCurrentBondPrice(bondId);
+        const bondName = this.getBondName(bondId);
+        const currentHolding = this.portfolioData.holdings.find(h => h.bond === bondId);
+    
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: white; padding: 30px; border-radius: 15px; width: 400px; max-width: 90%;">
+                <h3 style="color: var(--cmax-primary); margin-bottom: 10px;">Operar con ${bondId}</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9em;">${bondName}</p>
+
+                ${currentHolding ? `
+                <div style="background: var(--cmax-light); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                    <small>Tienes: ${currentHolding.quantity} unidades • Precio promedio: $${currentHolding.avgPrice.toFixed(2)}</small>
+                </div>
+                ` : ''}
+                    
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Tipo de Operación:</label>
+                    <select id="tradeType" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                        <option value="buy">Comprar</option>
+                        <option value="sell" ${!currentHolding ? 'disabled' : ''}>Vender</option>
+                    </select>
+                </div>
+                    
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Cantidad:</label>
+                    <input type="number" id="tradeQuantity" value="1" min="1" 
+                           ${currentHolding ? `max="${currentHolding.quantity}"` : ''}
+                           style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+                </div>
+                    
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Precio Actual:</label>
+                    <div style="padding: 10px; background: var(--cmax-light); border-radius: 8px; font-weight: 600;">
+                        $${currentPrice.toFixed(2)}
+                    </div>
+                </div>
+                    
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button onclick="this.closest('div[style]').remove()" 
+                            style="padding: 10px 20px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer;">
+                        Cancelar
+                    </button>
+                    <button onclick="dashboard.executeTrade('${bondId}')" 
+                            style="padding: 10px 20px; background: var(--cmax-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Confirmar Operación
+                    </button>
+                </div>
+            </div>
+        `;
+                    
+        document.body.appendChild(modal);
+                    
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     }
 
-    startAutoRefresh() {
-        setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                this.refreshData();
+    executeTrade(bondId) {
+        console.log('=== START executeTrade ===', bondId);
+        
+        const tradeType = document.getElementById('tradeType').value;
+        const quantity = parseInt(document.getElementById('tradeQuantity').value);
+        
+        if (isNaN(quantity) || quantity <= 0) {
+           this.showNotification('Error: Cantidad inválida');
+            return;
+        }
+    
+        // Encontrar el bono en el portafolio
+        const bondIndex = this.portfolioData.holdings.findIndex(h => h.bond === bondId);
+        
+        if (tradeType === 'buy') {
+            // Lógica para COMPRAR
+            if (bondIndex !== -1) {
+                // Ya existe en el portafolio - aumentar cantidad
+                const holding = this.portfolioData.holdings[bondIndex];
+                const currentPrice = this.getCurrentBondPrice(bondId);
+                
+                // Calcular nuevo precio promedio
+                const totalInvestment = (holding.quantity * holding.avgPrice) + (quantity * currentPrice);
+                const totalQuantity = holding.quantity + quantity;
+                const newAvgPrice = totalInvestment / totalQuantity;
+                
+                // Actualizar holding
+                holding.quantity = totalQuantity;
+                holding.avgPrice = parseFloat(newAvgPrice.toFixed(2));
+                holding.investment = parseFloat(totalInvestment.toFixed(2));
+                
+            } else {
+                // Nuevo bono en el portafolio
+                const currentPrice = this.getCurrentBondPrice(bondId);
+                const newHolding = {
+                    bond: bondId,
+                    name: this.getBondName(bondId),
+                    quantity: quantity,
+                    avgPrice: currentPrice,
+                    currentPrice: currentPrice,
+                    currentValue: quantity * currentPrice,
+                    investment: quantity * currentPrice,
+                    gainLoss: 0,
+                    yield: 0 // Inicialmente cero
+                };
+                this.portfolioData.holdings.push(newHolding);
             }
-        }, 30000);
+            
+            this.showNotification(`Compra ejecutada: ${quantity} unidades de ${bondId}`);
+            
+        } else if (tradeType === 'sell') {
+            // Lógica para VENDER
+            if (bondIndex === -1) {
+                this.showNotification('Error: No tienes este bono en tu portafolio');
+                return;
+        }
+        
+            const holding = this.portfolioData.holdings[bondIndex];
+        
+            if (quantity > holding.quantity) {
+                this.showNotification(`Error: Solo tienes ${holding.quantity} unidades disponibles`);
+                return;
+            }
+
+            if (quantity === holding.quantity) {
+                // Vender todo - eliminar del portafolio
+                this.portfolioData.holdings.splice(bondIndex, 1);
+            } else {
+                // Vender parcialmente - reducir cantidad
+                holding.quantity -= quantity;
+                holding.investment = holding.quantity * holding.avgPrice;
+            }
+            
+            this.showNotification(`Venta ejecutada: ${quantity} unidades de ${bondId}`);
+        }
+    
+        // Recalcular totales del portafolio (VERSIÓN SEGURA)
+        this.safeRecalculatePortfolioTotals();
+    
+        // Cerrar modal
+        const modal = document.querySelector('div[style*="position: fixed"]');
+        if (modal) modal.remove();
+        
+        // Actualizar la vista del portafolio solo si estamos en esa pestaña
+        if (this.currentTab === 'portfolio') {
+            setTimeout(() => {
+            this.loadPortfolioData();
+            }, 100);
+        }
+        
+        console.log('=== END executeTrade ===');
     }
+
+    safeRecalculatePortfolioTotals() {
+        console.log('=== START safeRecalculatePortfolioTotals ===');
+    
+        let totalValue = 0;
+        let totalInvestment = 0;
+
+        // Verificar que hay holdings
+        if (!this.portfolioData.holdings || this.portfolioData.holdings.length === 0) {
+            this.portfolioData.totalValue = 0;
+            this.portfolioData.totalInvestment = 0;
+            return;
+        }
+    
+        this.portfolioData.holdings.forEach((holding, index) => {
+            console.log(`Processing holding ${index}: ${holding.bond}`);
+            
+            // Solo procesar si los datos básicos existen
+            if (holding.quantity && holding.avgPrice) {
+                // Obtener precio actual
+                const currentPrice = this.getCurrentBondPrice(holding.bond);
+                holding.currentPrice = currentPrice;
+                holding.currentValue = parseFloat((holding.quantity * currentPrice).toFixed(2));
+                holding.investment = parseFloat((holding.quantity * holding.avgPrice).toFixed(2));
+                holding.gainLoss = parseFloat((holding.currentValue - holding.investment).toFixed(2));
+                
+                // Calcular yield de manera segura
+                if (holding.investment > 0) {
+                    const yieldValue = (holding.gainLoss / holding.investment) * 100;
+                    holding.yield = parseFloat(yieldValue.toFixed(2));
+                } else {
+                    holding.yield = 0;
+                }
+                
+                totalValue += holding.currentValue;
+                totalInvestment += holding.investment;
+            }
+        });
+    
+        this.portfolioData.totalValue = parseFloat(totalValue.toFixed(2));
+        this.portfolioData.totalInvestment = parseFloat(totalInvestment.toFixed(2));
+    
+        console.log('Final totals - Value:', this.portfolioData.totalValue, 'Investment:', this.portfolioData.totalInvestment);
+        console.log('=== END safeRecalculatePortfolioTotals ===');
+    }
+
+
+    // Método simulado para obtener precios actuales
+    getCurrentBondPrice(bondId) {
+        // En un caso real, esto vendría de tu API
+        const mockPrices = {
+            'CMAX-2022-001': 975.50,
+            'CMAX-2022-002': 962.75,
+            'CMAX-2023-001': 980.00,
+            'CMAX-2023-002': 955.25
+        };
+        return mockPrices[bondId] || 950.00;
+    }
+
+   // Método para obtener nombre del bono
+    getBondName(bondId) {
+        const bondNames = {
+            'CMAX-2022-001': 'Bono CMAX Corporativo 2022',
+            'CMAX-2022-002': 'Bono CMAX Verde 2022', 
+            'CMAX-2023-001': 'Bono CMAX Gobierno 2023',
+            'CMAX-2023-002': 'Bono CMAX Infraestructura 2023'
+        };
+        return bondNames[bondId] || `Bono ${bondId}`;
+    }
+
+    calculateYield(bondId, currentPrice) {
+        // Simulación más realista basada en el bono
+        const baseYields = {
+            'CMAX-2022-001': 4.5,
+            'CMAX-2022-002': 3.8,
+            'CMAX-2023-001': 4.2,
+            'CMAX-2023-002': 4.0
+        };
+    
+        const baseYield = baseYields[bondId] || 4.0;
+        // Pequeña variación aleatoria
+        const variation = (Math.random() - 0.5) * 0.5; // ±0.25%
+        return parseFloat((baseYield + variation).toFixed(2));
+    }
+
+        refreshData() {
+            if (this.currentTab === 'monitoring' && this.currentBond) {
+                this.loadBondData(this.currentPeriod);
+                this.showNotification(`Datos actualizados - ${this.getPeriodDisplayName(this.currentPeriod)}`);
+            } else if (this.currentTab === 'portfolio') {
+                this.loadPortfolioData();
+                this.showNotification('Portafolio actualizado');
+            } else if (this.currentTab === 'analysis') {
+                this.loadAnalysisData();
+                this.showNotification('Análisis actualizado');
+            }
+        }
+
+        startAutoRefresh() {
+            setInterval(() => {
+                if (document.visibilityState === 'visible') {
+                    this.refreshData();
+                }
+            }, 30000);
+        }
 
     showNotification(message) {
         const notification = document.createElement('div');
