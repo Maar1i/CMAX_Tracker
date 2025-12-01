@@ -1,3 +1,404 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+    min-height: 100vh;
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Estilos específicos para el logo */
+
+.logo {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.logo-image {
+    width: 250px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.logo h1 {
+    color: var(--cmax-primary);
+    font-size: 2.2em;
+    margin-bottom: 8px;
+    font-weight: bold;
+    order: 2; 
+}
+
+.logo p {
+    color: var(--text-light);
+    margin-bottom: 0;
+    font-size: 20px;
+    order: 3;
+    }
+
+body.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+    margin: 0;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.login-box {
+    background: var(--card-bg);
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--cmax-primary);
+}
+
+.btn-primary {
+    background: var(--cmax-primary);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.btn-primary:hover {
+    background: var(--cmax-secondary);
+}
+
+/* Estilos para el enlace de recuperación */
+.forgot-password-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.forgot-password-section a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s ease;
+}
+
+.forgot-password-section a:hover {
+    color: var(--cmax-primary);
+    text-decoration: underline;
+}
+
+/* Modales de recuperación */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    margin: 15% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: var(--shadow);
+}
+
+.modal-content h3 {
+    color: var(--cmax-primary);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+.modal-content .btn-primary {
+    margin-bottom: 15px;
+}
+
+.message {
+    padding: 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.message.success {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.message.error {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+/* Estilos de formularios */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--cmax-primary);
+}
+
+.btn-primary {
+    background: var(--cmax-primary);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: var(--cmax-secondary);
+}
+
+/* Estilos de administrador en dashboard */
+.dashboard {
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+}
+
+.dashboard-header {
+    background: var(--card-bg);
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left h1 {
+    color: var(--cmax-primary);
+    margin-bottom: 5px;
+    font-size: 1.8em;
+}
+
+.header-left p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Estilos específicos para admin */
+.admin-section {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+}
+
+.admin-section h2 {
+    color: var(--cmax-primary);
+    margin-bottom: 20px;
+    font-size: 1.4em;
+}
+
+.user-form {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto auto;
+    gap: 15px;
+    align-items: end;
+}
+
+.users-table {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.users-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.users-table th {
+    background: var(--cmax-light);
+    color: var(--cmax-primary);
+    font-weight: 600;
+}
+
+.users-table tr:hover {
+    background: var(--cmax-light);
+}
+
+.role-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.role-badge.admin {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-badge.user {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.btn-danger {
+    background: #f44336;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: background 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background: #d32f2f;
+}
+
+.text-muted {
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Responsive para admin */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .users-table {
+        font-size: 0.9em;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .header-right {
+        justify-content: center;
+    }
+}
+
+/* Sidebar administración*/
+.dashboard-header h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--cmax-primary);
+}
+
+.dashboard-header p {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.1em;
+    color: var(--text-secondary);
+}
+
+
+.dashboard-container, 
+.main-content,
+.sidebar,
+.menu-item,
+.content-header h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 :root {
     --cmax-primary: #1d6322;
     --cmax-secondary: #2e7d32;
@@ -17,7 +418,7 @@
     --shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 
-/* ===== ESTILOS DE LOGIN (de style.css) ===== */
+/* EStilos de Login */
 .login-container {
     width: 100%;
     max-width: 400px;
@@ -552,19 +953,28 @@
 
 .detail-item {
     display: flex;
-    justify-content: between;
-    padding: 15px 0;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 14px 0;
     border-bottom: 1px solid var(--border);
+    gap: 40px;
 }
 
 .detail-label {
     color: var(--text-secondary);
     font-weight: 500;
+    min-width: 160px;
+    font-size: 0.95em;
+    flex-shrink: 0;
 }
 
 .detail-value {
     font-weight: 600;
     color: var(--cmax-primary);
+    text-align: left;
+    font-size: 1em;
+    flex: 1;  
+    max-width: calc(100% - 200px);
 }
 
 /* Responsive */
@@ -578,7 +988,7 @@
     .dashboard-container {
         flex-direction: column;
     }
-    
+
     .sidebar {
         width: 100%;
         height: auto;
@@ -767,18 +1177,27 @@
 
 /* Analysis Styles */
 .analysis-tools {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;  
+    gap: 20px;                       
+    width: 100%;
+    margin-bottom: 40px;          
 }
 
 .tool-card {
+    flex: 1;                   
     background: var(--card-bg);
     border-radius: 15px;
     padding: 25px;
     box-shadow: var(--shadow);
     text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+    border-color: var(--cmax-primary);
+    transform: translateY(-2px);
 }
 
 .tool-icon {
@@ -802,6 +1221,7 @@
 .tool-content p {
     color: var(--text-secondary);
     margin-bottom: 20px;
+    line-height: 1.5;
 }
 
 .tool-btn {
@@ -811,11 +1231,13 @@
     padding: 12px 24px;
     border-radius: 8px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     margin: 0 auto;
     transition: background 0.3s ease;
+    font-size: 0.95em;
+    font-weight: 500;
 }
 
 .tool-btn:hover {

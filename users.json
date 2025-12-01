@@ -4,21 +4,6 @@
         "email": "inversion.cmax@gmail.com",
         "role": "admin"
     },
-    "user1": {
-        "password": "user123",
-        "email": "user1@cmax.com",
-        "role": "user"
-    },
-    "juan.perez": {
-        "password": "clave123",
-        "email": "juan.perez@empresa.com",
-        "role": "user"
-    },
-    "maria.garcia": {
-        "password": "password456",
-        "email": "maria.garcia@empresa.com",
-        "role": "user"
-    },
     "Mariana": {
         "password": "marianaCMAX",
         "email": "mar.nageld@gmail.com",

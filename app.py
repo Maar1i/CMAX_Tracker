@@ -11,7 +11,7 @@ import numpy as np
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'
 
-# Configuración de email (usando Gmail como ejemplo)
+# Configuración de email (usando Gmail)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -238,15 +238,47 @@ def forgot_password():
         session['verification_code'] = verification_code
         session['code_expires'] = (datetime.now() + timedelta(minutes=10)).timestamp()
         
-        # Modo desarrollo - mostrar código en consola
-        print(f"🔐 CÓDIGO PARA {username}: {verification_code}")
+        user_email = users[username]['email']
         
-        return jsonify({
-            'success': True, 
-            'message': f'Código de prueba: {verification_code} (En producción se enviaría por email)'
-        })
+        try:
+            
+            msg = Message(
+                subject='CMAX - Código de Recuperación de Contraseña',
+                sender=app.config['MAIL_USERNAME'],
+                recipients=[user_email],
+                body=f'''
+                Hola {username},
+                
+                Has solicitado restablecer tu contraseña en CMAX Bonos.
+                
+                Tu código de verificación es: {verification_code}
+                
+                Este código expirará en 10 minutos.
+                
+                Si no solicitaste este cambio, ignora este mensaje.
+                
+                Saludos,
+                Equipo CMAX
+                '''
+            )
+            mail.send(msg)
+            
+            return jsonify({
+                'success': True, 
+                'message': f'Código enviado a {user_email}'
+            })
+            
+        except Exception as e:
+            print(f"Error enviando email: {e}")
+            # Fallback: mostrar en consola si falla el email
+            print(f"🔐 CÓDIGO PARA {username}: {verification_code}")
+            return jsonify({
+                'success': True, 
+                'message': f'Error enviando email. Código de prueba: {verification_code}'
+            })
     
     return jsonify({'success': False, 'message': 'Usuario no encontrado'})
+
 
 @app.route('/verify-code', methods=['POST'])
 def verify_code():

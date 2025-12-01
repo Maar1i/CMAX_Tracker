@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMAX - Dashboard Premium</title>
+    <title>CMAX - Monitoreo </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='premium.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -235,6 +235,7 @@
 
                         <!-- Analysis Tools -->
                         <div class="analysis-tools">
+                            
                             <div class="tool-card">
                                 <div class="tool-icon">
                                     <i class="fas fa-calculator"></i>
@@ -242,7 +243,7 @@
                                 <div class="tool-content">
                                     <h3>Calculadora de Rentabilidad</h3>
                                     <p>Calcula el rendimiento esperado de tu inversión</p>
-                                    <button class="tool-btn" onclick="analysis.openCalculator()">
+                                    <button class="tool-btn" onclick="dashboard.openCalculator()">
                                         <i class="fas fa-external-link-alt"></i>
                                         Abrir Calculadora
                                     </button>
@@ -256,7 +257,7 @@
                                 <div class="tool-content">
                                     <h3>Análisis Comparativo</h3>
                                     <p>Compara el rendimiento de diferentes bonos</p>
-                                    <button class="tool-btn" onclick="analysis.openComparison()">
+                                    <button class="tool-btn" onclick="dashboard.openComparison()">
                                         <i class="fas fa-external-link-alt"></i>
                                         Comparar Bonos
                                     </button>
@@ -266,17 +267,19 @@
                             <div class="tool-card">
                                 <div class="tool-icon">
                                     <i class="fas fa-project-diagram"></i>
-                                </div>
+                                    </div>
                                 <div class="tool-content">
                                     <h3>Simulador de Escenarios</h3>
                                     <p>Simula diferentes condiciones de mercado</p>
-                                    <button class="tool-btn" onclick="analysis.openSimulator()">
+                                    <button class="tool-btn" onclick="dashboard.openSimulator()">
                                         <i class="fas fa-external-link-alt"></i>
                                         Ejecutar Simulación
                                     </button>
-                                </div>
+                                 </div>
                             </div>
+
                         </div>
+
 
                         <!-- Technical Analysis -->
                         <div class="technical-analysis">
