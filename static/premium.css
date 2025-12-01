@@ -1493,3 +1493,64 @@ body.login-page {
 .holdings-table .btn-small {
     margin: 2px;
 }
+
+/* ===== ESTILOS LOGO SIDEBAR ===== */
+.sidebar-logo {
+    width: 150px;    /* Más grande */
+    height: 150px; 
+    border-radius: 6px;
+    object-fit: contain;
+}
+
+.sidebar-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.sidebar-header .logo i {
+    color: var(--cmax-accent);
+    font-size: 1.3em;
+}
+
+/* ===== SIDEBAR FIJO ===== */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 280px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    margin-left: 280px;
+}
+
+/* Asegurar que el footer siempre esté abajo */
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px 25px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Menú ocupa el espacio disponible */
+.sidebar-menu {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+}
